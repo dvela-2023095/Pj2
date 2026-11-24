@@ -14,8 +14,9 @@ public class LCFS extends Policy{
     public synchronized  void remove(){
         if(!pila.isEmpty()){
             pila.pop();
+            size--;
         }
-        size--;
+        
     }
 
     @Override
@@ -29,8 +30,7 @@ public class LCFS extends Policy{
 
     @Override
     public synchronized  String toString(){
-        System.out.println("COLA DE LAST-COME FIRST-SERVED");
-        String letrero="";
+        String letrero="COLA DE LAST-COME FIRST-SERVED\n";
         for(SimpleProcess proceso:pila){
             letrero+=proceso.toString()+"\n";
         }

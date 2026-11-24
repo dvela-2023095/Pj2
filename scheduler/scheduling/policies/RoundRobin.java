@@ -35,15 +35,14 @@ public class RoundRobin extends Policy{
 
     @Override
     public synchronized  String toString(){
-        System.out.println("PROCESOS EN COLA:");
-        String letrero="";
+        String letrero="PROCESOS EN COLA DEL ROUNDROBIN\n:";
         for(SimpleProcess proceso:cola){
             letrero+= proceso.toString()+"\n";
         }
         return letrero;
     }
 
-    public synchronized void rencolar(SimpleProces p){
+    public synchronized void rencolar(SimpleProcess p){
         cola.add(p);
         size++;
     }

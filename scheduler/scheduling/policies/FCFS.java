@@ -26,8 +26,7 @@ public class FCFS extends Policy{
 
     @Override
     public synchronized  String toString(){
-        System.out.println("PROCESOS EN COLA:");
-        String letrero="";
+        String letrero="PROCESOS EN COLA del FIRST-COME FIRST-SERVED:\n";
         for(SimpleProcess proceso:cola){
             letrero+= proceso.toString()+"\n";
         }
