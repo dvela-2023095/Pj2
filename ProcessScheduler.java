@@ -53,7 +53,7 @@ public class ProcessScheduler {
             uso();
             return;
         }
-        String bandera = args[0].toLowerCase();
+        String bandera = args[0].toLowerCase(), nombrePolitica = "";
         boolean esRR = bandera.equals("-rr");
         boolean esFCFS = bandera.equals("-fcfs");
         boolean esLCFS = bandera.equals("-lcfs");
@@ -111,18 +111,24 @@ public class ProcessScheduler {
         Policy policy;
         if (esRR) {
             policy = new RoundRobin(quantum);
+            nombrePolitica = "Round Robin (RR), quantum = " + quantum + " ms";
         } else if (esLCFS) {
             policy = new LCFS();
+            nombrePolitica = "Last-Come First-Served (LCFS)";
         } else {
             policy = new FCFS();
+            nombrePolitica = "First-Come First-Served (FCFS)";
         }
-        Procesador procesador = new Procesador(policy);
+        Procesador procesador = new Procesador(policy, nombrePolitica);
         Generador generador = new Generador(policy, procesador, minMs, maxMs);
 
-        System.out.println("Simulacion iniciada con la politica: " + Procesador.nombrePolitica(policy));
+        Thread hiloProcesador = new Thread(procesador, "Procesador");
+        Thread hiloGenerador = new Thread(generador, "Generador");
+
+        System.out.println("Simulacion iniciada con la politica: " + nombrePolitica);
         System.out.println("Escriba q y presione Enter para detener.");
-        procesador.start();
-        generador.start();
+        hiloProcesador.start();
+        hiloGenerador.start();
 
         // Espera de la entrada (q + Enter); EOF tambien detiene la simulacion
         BufferedReader consola = new BufferedReader(new InputStreamReader(System.in));
@@ -141,21 +147,14 @@ public class ProcessScheduler {
         generador.detener();
         procesador.detener();
         try {
-            generador.join();
-            procesador.join();
+            hiloGenerador.join();
+            hiloProcesador.join();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
 
-        int atendidos = procesador.getAtendidos();
-        int enCola = policy.size() + procesador.getPendientesEnServicio();
-        System.out.println("\n############## RESUMEN FINAL ##############");
-        System.out.println("Politica utilizada: " + Procesador.nombrePolitica(policy));
-        System.out.println("Procesos atendidos: " + atendidos);
-        System.out.println("Procesos que quedaron en cola (sin atenderse): " + enCola);
-        System.out.printf("Tiempo promedio de atencion por proceso: %.3f segundos%n",
-                procesador.getTiempoPromedio() / 1000.0);
-        System.out.println("###########################################");
+        // El resumen final (atendidos, en cola, promedio y politica) lo imprime el Procesador
+        procesador.imprimirEstadisticasFinales();
     }
 
     /**
